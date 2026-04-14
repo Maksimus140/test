@@ -1,3 +1,18 @@
-projekt 1
-projekt służy do nauki STM32F303 Discovery
-krótki plan: LED, GPIO, podstawy C, pierwsze programy.
+STM32F303 Discovery Project
+
+OPIS PROJEKTU
+   projekt służy do nauki STM32F303 Discovery
+
+CEL 
+   NAUKA PODSTAW PROGRAMOWANIA
+
+PLAN
+   LED
+   GPIO 
+   PODSTAWY C
+   PIERWSZE PROGRAMY
+
+Technologie
+   STM32CubeIDE
+   STM32CubeMX
+   C (embedded)
