@@ -18,6 +18,8 @@ git status – sprawdza zmiany repezytorium
 git add – dodanie plików do commita
 git commit -m "wiadomość" - zapisuje zmiany lokanie
 git push – wysyla te zmiany na github
+git log - pokazuje logi z commitow i jaki maja opis i ich dane
+git checkout -b "nazwa" - tworzy nowego brancha
 
 STM
 HAL_GPIO_ReadPin - odczytuje wartosc z pinu
