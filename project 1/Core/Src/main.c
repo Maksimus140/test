@@ -167,23 +167,14 @@ int main(void)
 	  {
 		  counter++;
 	  }
-	  if (counter == 1)
+	  switch(counter)
 	  {
-		  main1();
+	  case 1: main1(); break;
+	  case 2: main2(); break;
+	  case 3: main3(); break;
+	  default: counter = 0;
 	  }
 
-	  if (counter == 2)
-	  {
-		  main2();
-	  }
-	  if (counter == 3)
-	  {
-		  main3();
-	  }
-	  if (counter > 3)
-	  {
-		  counter = 0;
-	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
