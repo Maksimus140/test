@@ -16,3 +16,6 @@ Technologie
    STM32CubeIDE
    STM32CubeMX
    C (embedded)
+   visual studio code
+   git bash
+   
