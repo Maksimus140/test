@@ -18,8 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <stdio.h>
-
+#define ACC_ADDR (0x19 << 1)
+#define MAG_ADDR (0x1E << 1)
+static int state = 0;
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -42,6 +43,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c2;
 
 SPI_HandleTypeDef hspi1;
 
@@ -60,6 +62,7 @@ static void MX_I2C1_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USB_PCD_Init(void);
+static void MX_I2C2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -73,8 +76,84 @@ static void MX_USB_PCD_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
+int mode1(void)
+{
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);
+			  uint8_t data[6];
+
+			  	  HAL_I2C_Mem_Read(&hi2c1, ACC_ADDR, 0x28 | 0x80, 1, data, 6, HAL_MAX_DELAY);
+			  	  int16_t ax = data[0] | (data[1] << 8);
+			  	  int16_t ay = data[2] | (data[3] << 8);
+			  	  int16_t az = data[4] | (data[5] << 8);
+			  	  int threshold = 12000;
+
+			  	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET);
+			  	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);
+			  	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_RESET);
+			  	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
+
+			  	  // 2. warunki
+			  	  if(ax > threshold)
+			  	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
+
+			  	  if(ax < -threshold)
+			  	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);
+
+			  	  if(ay > threshold)
+			  	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);
+
+			  	  if(ay < -threshold)
+			  	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_SET);
+}
+
+int mode2(void)
+{
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
+	  uint8_t mag_data[6];
+	  HAL_I2C_Mem_Read(&hi2c1, MAG_ADDR, 0x03, 1, mag_data, 6, HAL_MAX_DELAY);
+	  int16_t mx = (mag_data[0] << 8) |mag_data[1];
+	  int16_t mz = (mag_data[2] << 8) | mag_data[3];
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
+	  if(mx > 50)
+	  {
+	      state = 1;
+	  }
+
+
+	  else if(mx < -50)
+	  {
+		  state = -1;
+
+
+}
+	  else
+	  {
+		  state = 0;
+	  }
+	  if(state == 1 )
+	  {
+		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);
+	  }
+	  else if(state == -1)
+	  {
+		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_SET);
+	  }
+	  else
+	  {
+		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
+	  }
+
+
+}
 int main(void)
 {
+	int counter = 0;
+	static int state = 0;
 
   /* USER CODE BEGIN 1 */
 
@@ -96,49 +175,45 @@ int main(void)
 
   /* USER CODE END SysInit */
 
+
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
   MX_USART2_UART_Init();
   MX_USB_PCD_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
-#define ACC_ADDR (0x19 << 1)
+
 
   uint8_t ctrl = 0x27;
   HAL_I2C_Mem_Write(&hi2c1, ACC_ADDR, 0x20, 1, &ctrl, 1, HAL_MAX_DELAY);
+
+  uint8_t config_a = 0x14; // 30 Hz
+  uint8_t config_b = 0x20; // gain
+  uint8_t mode = 0x00;     // continuous
+
+  HAL_I2C_Mem_Write(&hi2c1, MAG_ADDR, 0x00, 1, &config_a, 1, HAL_MAX_DELAY);
+  HAL_I2C_Mem_Write(&hi2c1, MAG_ADDR, 0x01, 1, &config_b, 1, HAL_MAX_DELAY);
+  HAL_I2C_Mem_Write(&hi2c1, MAG_ADDR, 0x02, 1, &mode, 1, HAL_MAX_DELAY);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  uint8_t data[6];
-
-	  HAL_I2C_Mem_Read(&hi2c1, ACC_ADDR, 0x28 | 0x80, 1, data, 6, HAL_MAX_DELAY);
-	  int16_t ax = data[0] | (data[1] << 8);
-	  int16_t ay = data[2] | (data[3] << 8);
-	  int16_t az = data[4] | (data[5] << 8);
-	  printf("%d %d %d\n", ax, ay, az);
-	  int threshold = 12000;
-
-	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET);
-	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);
-	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_RESET);
-	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
-
-	  // 2. warunki
-	  if(ax > threshold)
-	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
-
-	  if(ax < -threshold)
-	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);
-
-	  if(ay > threshold)
-	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);
-
-	  if(ay < -threshold)
-	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_SET);
+	  if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET)
+	  {
+	      counter++;
+	      while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET);
+	      HAL_Delay(50);
+	  }
+	  switch(counter)
+	  {
+	  case 1: mode1(); break;
+	  case 2: mode2(); break;
+	  default: counter = 0;
+	  }
 
 	  }
     /* USER CODE END WHILE */
@@ -188,9 +263,10 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB|RCC_PERIPHCLK_USART2
-                              |RCC_PERIPHCLK_I2C1;
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_I2C2;
   PeriphClkInit.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
+  PeriphClkInit.I2c2ClockSelection = RCC_I2C2CLKSOURCE_HSI;
   PeriphClkInit.USBClockSelection = RCC_USBCLKSOURCE_PLL;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
@@ -243,6 +319,54 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = 0x00201D2B;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
 
 }
 
