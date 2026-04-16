@@ -19,6 +19,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 int counter = 0;
+#define ACC_ADDR (0x19 << 1)
+#define MAG_ADDR (0x1E << 1)
+static int state = 0;
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -72,6 +75,78 @@ static void MX_USB_PCD_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
+int mode1(void)
+{
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+	uint8_t data[6];
+				 HAL_I2C_Mem_Read(&hi2c1, ACC_ADDR, 0X28 | 0X80, 1, data, 6, HAL_MAX_DELAY);
+	int16_t ax = data[0] | (data[1] << 8);
+	int16_t ay = data[2] | (data[3] << 8);
+	int16_t az = data[4] | (data[5] << 8);
+	 HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET);
+	 HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);
+	 HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_RESET);
+	 HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
+	 int threshold = 12000;
+ 	  if(ax > threshold)
+ 	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
+
+ 	  if(ax < -threshold)
+ 	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);
+
+ 	  if(ay > threshold)
+ 	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);
+
+ 	  if(ay < -threshold)
+ 	      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_SET);
+
+
+
+
+}
+int mode2 (void)
+{
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
+	uint8_t mag_data[6];
+					 HAL_I2C_Mem_Read(&hi2c1, MAG_ADDR, 0x03, 1, mag_data, 6, HAL_MAX_DELAY);
+	int16_t mx = (mag_data[0] << 8) |mag_data[1];
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);
+	  if(mx > 50)
+	  {
+	      state = 1;
+	  }
+
+
+	  else if(mx < -50)
+	  {
+		  state = -1;
+
+
+}
+	  else
+	  {
+		  state = 0;
+	  }
+	  if(state == 1 )
+	  {
+		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);
+	  }
+	  else if(state == -1)
+	  {
+		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_SET);
+	  }
+	  else
+	  {
+		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
+	  }
+
+
+}
+
 int main(void)
 {
 
@@ -110,18 +185,13 @@ HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(counter <= 5 && counter != 0)
+	  switch(counter)
 	  {
-		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_SET);
+	  case 1: mode1(); break;
+	  case 2: mode2(); break;
+	  default: counter = 0;
 	  }
-	  else if(counter > 5)
-	  {
-		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
-	  }
-	  else
-	  {
-		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
-	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
