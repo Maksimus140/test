@@ -18,8 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-int counter = 0;
-
+volatile int counter = 0;
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -75,10 +74,14 @@ static void MX_USB_PCD_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
+void swiecenie_lampki(void)
+{
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);
+}
 int main(void)
 {
 
-  /* USER CODE BEGIN 1 */
+/* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
 
@@ -106,13 +109,19 @@ int main(void)
   MX_TIM3_Init();
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(counter == 1)
+	  {
+		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);
+	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -432,20 +441,43 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-uint8_t last = 0;
+volatile uint8_t last = 0;
 void  HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+
 	if(htim->Instance == TIM2)
 	{
 		uint8_t current = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);
-		if(current = 1 && last = 0)
+		if(current == 1 && last == 0)
 		{
 			counter++;
 		}
+		last = current;
+
 	}
 	if(htim->Instance == TIM3)
 	{
-		HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_9);
+		if(counter == 2)
+		{
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_13, GPIO_PIN_RESET);
+			HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_9);
+		}
+		if(counter == 3)
+		{
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_13, GPIO_PIN_RESET);
+			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
+		    HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_11);
+		}
+		if(counter >= 4)
+		{
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_13, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_10, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_11, GPIO_PIN_RESET);
+			counter = 0;
+		}
+
 	}
 }
 /* USER CODE END 4 */

@@ -63,6 +63,9 @@ case n - uzywane przy switchu zeby co zrobic przy jakies wartosci (trzeba jeszcz
 int16_t ax = data[0] | (data[1] << 8); - laczy te dwa miejsca z tabeli w jedna 16 bitowa zmienna i przenosi data[1] o 8 bitow
 uint8_t - tworzy 8 bitowa zmienna
 
+przedrostki o zmiennych(volatile, static)
+-volatile - wartosc jest sprawdzana ciagle
+-static zmienna zapamietuje wartosc miedzy wywolaniami funkcji
 
 TIMERY 
 prescaler - oznacza ile razy zegar bedzie wolniejszy timer clock = cpu clock / prescaler
