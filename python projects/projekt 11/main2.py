@@ -35,7 +35,6 @@ while True:
         plt.plot(ax_list, label="x")
         plt.plot(ay_list, label="y")
         plt.plot(az_list, label="z")
-        plt.subplot(2, 1, 2)
         plt.legend()
         plt.pause(0.01)
         ax_m_list.append(ax_m)
