@@ -1,0 +1,55 @@
+# [projekt 11]
+
+## Goal
+odczyt dancyh z miernikow i zakomunikowanie sie z komputerem poprzez uart
+
+---
+
+## Hardware
+- Płytka: STM32F303 Discovery
+- czujniki: akcylometr i magnetometr
+- LEDY i TIMERY
+-  
+
+---
+
+## Tools
+- STM32CubeIDE
+- Język: C 
+- Python 3 
+- Biblioteki:
+  - np. pyserial
+  - np. matplotlib
+
+---
+
+## STM32 PART
+- inicjalizacja czujnikow akcylometru i magnetometru
+- komunikacja z czujnikami poprzez i2c
+- timer sterujacy miganiem diody
+- pobiera sygnaly z magnetometru i akcylometru potem wysyla dane poprzez tekst do pythona python
+
+---
+
+## Python UART part
+- polaczenie z com poprzez usb user (wirutalny COM)
+- odbiea dane wyslane przez stm32 
+- przetwarza dane wyslane jako tekst na liczby ktore przypisuje do zmiennych
+- z danych zmiennych dodanych do list tworzy on dwa wykresy jeden dla magnetometru drugi dla akcelometru
+
+---
+
+## how to run
+- wgraj kod
+- podlacz plytke do komputera
+- uruchom skrypt w pythonie
+- wpisz w terminalu dana komende co chcesz zrobic
+- w razie zmierzenia wartosci poprzez czujniki pojawia sie wykres 
+- obsewuj wykres
+
+## what i learned 
+- podstawy komunikacji pomiedzy komputerem a plytka
+- obsluga plytki za pomoca uart
+- odczyt danych z miernikow i przeslanie ich do pythona
+- podstawy tworzenia wykresow za pomoca pythona 
+
