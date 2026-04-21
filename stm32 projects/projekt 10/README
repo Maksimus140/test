@@ -1,0 +1,48 @@
+# [projekt 11]
+
+## Goal
+odczyt danych wyslanych z pythona na stm32 i wlaczenie danego trybu zaswiecenia diod led
+
+---
+
+## Hardware
+- Płytka: STM32F303 Discovery
+- LEDY
+
+
+---
+
+## Tools
+- STM32CubeIDE
+- Język: C 
+- Python 3 
+- Biblioteki:
+  - np.serial 
+  -    time
+
+---
+
+## STM32 PART
+- dostarczenie sygnalu z pythona
+- w zaleznosci od sygnalu zapalenie danej diody lub przelaczenie trybu
+
+---
+
+## Python UART part
+- polaczenie z com poprzez usb user (wirutalny COM)
+- wysyla sygnal ktory determinuje jaki tryb jest wlaczony
+
+---
+
+## how to run
+- wgraj kod
+- podlacz plytke do komputera
+- uruchom skrypt w pythonie
+- wpisz w terminalu dana komende co chcesz zrobic
+- obserwuj diody
+
+## what i learned 
+- podstawy komunikacji pomiedzy komputerem a plytka
+- obsluga plytki za pomoca uart
+
+

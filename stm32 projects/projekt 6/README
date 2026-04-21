@@ -1,0 +1,48 @@
+#  STM32 – Button + Timers + LED
+
+##  Opis
+Projekt STM32 wykorzystujący timery i przerwania do obsługi przycisku oraz sterowania diodami LED.
+
+---
+
+##  Funkcjonalności
+- obsługa przycisku (debounce)
+- liczenie kliknięć (`counter`)
+- sterowanie LED
+- timery (TIM2, TIM3)
+
+---
+
+##  Jak działa
+
+- TIM2 → odczyt przycisku  
+- TIM3 → sterowanie diodami  
+
+Kliknięcie zwiększa `counter`, który zmienia zachowanie LED:
+
+- 1 → LED ON  
+- 2 → miganie  
+- 3 → więcej LED  
+- ≥4 → reset  
+
+---
+
+##  Technologie
+- STM32 (HAL)
+- C
+- GPIO
+- Timery + przerwania
+
+---
+
+## Uruchomienie
+1. Wgraj kod na STM32  
+2. Naciśnij przycisk  
+3. Obserwuj diody  
+
+---
+
+## Nauka
+- przerwania
+- timery
+- GPIO

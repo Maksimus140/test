@@ -1,0 +1,59 @@
+# STM32 – Akcelerometr + LED + Timery
+
+## Opis
+Projekt STM32 wykorzystujący akcelerometr (I2C) do sterowania diodami LED w zależności od nachylenia płytki.
+
+---
+
+## Funkcjonalności
+- odczyt danych z akcelerometru
+- obsługa przycisku
+- sterowanie LED w zależności od osi Y
+- zmienna prędkość migania LED
+- timery
+
+---
+
+## Jak działa
+
+- TIM2 – odczyt przycisku  
+- TIM3 – odczyt akcelerometru i sterowanie LED  
+
+Po naciśnięciu przycisku
+
+- odczytywana jest wartość ay
+- w zależności od nachylenia:
+  - zapalane są różne diody
+  - zmienia się częstotliwość migania
+
+---
+
+## Logika
+
+- dodatnie ay – jedna strona LED  
+- ujemne ay – druga strona LED  
+- większe nachylenie – szybsze miganie  
+
+---
+
+## Technologie
+- STM32
+- C
+- I2C
+- GPIO
+- timery i przerwania
+
+---
+
+## Uruchomienie
+1. Wgraj kod na STM32  
+2. Naciśnij przycisk  
+3. Poruszaj płytką  
+4. Obserwuj diody  
+
+---
+## Czego się nauczyłem
+- komunikacja I2C  
+- odczyt danych z czujnika  
+- przetwarzanie danych
+- timery i przerwania  
