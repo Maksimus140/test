@@ -1,0 +1,18 @@
+## PORT COM
+-port com po ustawieniu go w cubemx znajduje w menedzerze urzadzen
+-potem uzywam biblioteki serial.serial ktora otwiera komunikacje poprzez com
+-potem ustawiam ktory com np com 3 potem predkosc transmisji np 115200 i ewetualnie timeout = np 1 to oznacza ile maksymalnie bedzie czekac na dane 
+
+--
+## DO CZEGO SLUZY
+-wysyla dane ktore sa przetwarzane w stm32
+-odbiera dane od czujnikow
+-na podstawie danych z czujnikow wyswietla on wykresy
+
+## komendy
+ser.write - wysyla do plytki danae
+ser.readline - odczytuje 
+time.sleep - program sie nie wykonuje przez pewien czas zeby dac chwile zeby urzadzenie bylo gotowe
+
+## biblioteki ktore pobralem
+-korzystam z biblioteki pySerial
